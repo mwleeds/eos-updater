@@ -115,6 +115,8 @@ AS_IF([test "$GPG" = ""],[
 	AC_MSG_ERROR([gpg is required for tests])
 ])
 
+AC_DEFINE([OSTREE_ENABLE_EXPERIMENTAL_API],[1],[Define if libOSTree experimental API should be enabled])
+
 # Code coverage
 AX_CODE_COVERAGE
 
