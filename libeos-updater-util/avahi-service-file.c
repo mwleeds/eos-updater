@@ -657,7 +657,7 @@ get_and_check_bloom_hash_func_id (GVariantDict         *options_dict,
                                   guint8               *out_bloom_hash_func_id,
                                   GError              **error)
 {
-  guint8 bloom_hash_id = EOS_OSTREE_AVAHI_BLOOM_HASH_ID_STR;
+  guint8 bloom_hash_id = EOS_OSTREE_AVAHI_BLOOM_HASH_ID_OSTREE_COLLECTION_REF;
 
   g_variant_dict_lookup (options_dict, EOS_OSTREE_AVAHI_OPTION_BLOOM_HASH_ID_Y,
                          "y", &bloom_hash_id);

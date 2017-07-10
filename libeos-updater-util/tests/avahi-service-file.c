@@ -494,7 +494,7 @@ const TestOptions test_options[] =
       FALSE,
     },
     {
-      {SET_BLOOM_HASH_ID, .bloom_hash_id = EOS_OSTREE_AVAHI_BLOOM_HASH_ID_STR},
+      {SET_BLOOM_HASH_ID, .bloom_hash_id = EOS_OSTREE_AVAHI_BLOOM_HASH_ID_OSTREE_COLLECTION_REF},
       TRUE,
     },
     {
