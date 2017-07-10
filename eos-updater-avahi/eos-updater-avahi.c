@@ -55,7 +55,7 @@ get_refs (OstreeRepo            *repo,
                            "no refs to advertise");
       return FALSE;
     }
-  refs_array = g_ptr_array_new_full (g_hash_table_size (refs) + 1, ostree_collection_ref_free);
+  refs_array = g_ptr_array_new_full (g_hash_table_size (refs) + 1, (GDestroyNotify)ostree_collection_ref_free);
   g_hash_table_iter_init (&iter, refs);
   while (g_hash_table_iter_next (&iter, (gpointer *)&key, (gpointer *)&value))
     {
