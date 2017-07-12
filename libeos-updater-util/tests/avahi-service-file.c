@@ -30,7 +30,7 @@ typedef struct
 {
   gchar *tmp_dir;
   GDateTime *example_timestamp;  /* owned */
-  const gchar *refs[2];
+  OstreeCollectionRefv refs;
 } Fixture;
 
 /* Set up a temporary directory to create test service files in. */
@@ -43,7 +43,8 @@ setup (Fixture       *fixture,
   fixture->tmp_dir = g_dir_make_tmp ("eos-updater-util-tests-avahi-service-file-XXXXXX",
                                      &error);
   g_assert_no_error (error);
-  fixture->refs[0] = "ref";
+  fixture->refs = g_new0 (OstreeCollectionRef*, 2);
+  fixture->refs[0] = ostree_collection_ref_new ("com.example", "ref");
   fixture->refs[1] = NULL;
 
   fixture->example_timestamp = g_date_time_new_utc (2017, 2, 17, 0, 0, 0);
@@ -58,6 +59,8 @@ teardown (Fixture       *fixture,
 
   g_assert_cmpint (g_rmdir (fixture->tmp_dir), ==, 0);
   g_free (fixture->tmp_dir);
+
+  ostree_collection_ref_freev (fixture->refs);
 }
 
 /* Check the contents of a generated .service file. */
@@ -327,8 +330,8 @@ get_encoded_bloom_bits (gboolean short_bloom_size)
 {
   /* - AQEAA... - guint8 1, guint8 1, guint8[] of bloom filter bits encoding "ref" */
   if (short_bloom_size)
-    return "AQEAAAAAAAAAAAAACAA=";
-  return "AQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+    return "AQFAAAAAAAAAAAAAAAA=";
+  return "AQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 }
 
 static const gchar *
