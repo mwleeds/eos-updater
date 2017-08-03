@@ -12,7 +12,6 @@ Build-Depends:
  eos-metrics-0-dev,
  gnupg,
  gobject-introspection (>= 1.30.0),
- gtk-doc-tools (>= 1.14),
  libavahi-client-dev (>= 0.6.31),
  libavahi-glib-dev (>= 0.6.31),
  libgirepository1.0-dev (>= 1.30.0),
@@ -94,25 +93,11 @@ Depends:
  libsoup2.4-dev,
  ${misc:Depends},
  ${shlibs:Depends},
-Suggests:
- libeos-updater-0-doc,
 Description: Updater for Endless OS - development library
  This package contains the components for keeping Endless OS up to date.
  .
  This package contains the development files for use by the updater and
  other update packaging tools.
-
-Package: libeos-updater-0-doc
-Section: doc
-Architecture: all
-Multi-Arch: foreign
-Depends:
- ${misc:Depends},
-Description: Updater for Endless OS - documentation
- This package contains the components for keeping Endless OS up to date.
- .
- This package contains reference documentation for the APIs used
- by the updater and other update packaging tools.
 
 Package: libeos-updater-util-0-tests
 Section: misc
