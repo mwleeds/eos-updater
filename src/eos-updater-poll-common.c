@@ -305,7 +305,8 @@ get_booted_refspec (gchar **booted_refspec,
 
 static GVariant *
 get_repo_pull_options (const gchar *url_override,
-                       const gchar *ref)
+                       const gchar *ref,
+                       const gchar *collection_id)
 {
   g_auto(GVariantBuilder) builder;
 
@@ -315,8 +316,29 @@ get_repo_pull_options (const gchar *url_override,
                            g_variant_new_variant (g_variant_new_string (url_override)));
   g_variant_builder_add (&builder, "{s@v}", "flags",
                          g_variant_new_variant (g_variant_new_int32 (OSTREE_REPO_PULL_FLAGS_COMMIT_ONLY)));
-  g_variant_builder_add (&builder, "{s@v}", "refs",
-                         g_variant_new_variant (g_variant_new_strv (&ref, 1)));
+
+  if (collection_id != NULL && collection_id[0] != '\0')
+    {
+      g_auto(GVariantBuilder) collection_refs_builder;
+
+      /* Use unsigned summary support. The commit metadata signatures will ensure
+       * that the commits we get correspond to the right refs, and the
+       * OSTREE_REPO_METADATA_REF can be used for signed per-repo metadata, so we
+       * don't lose anything by not checking the summary signature.
+       */
+      g_variant_builder_add (&builder, "{s@v}", "gpg-verify-summary",
+                             g_variant_new_variant (g_variant_new_boolean (FALSE)));
+
+      g_variant_builder_init (&collection_refs_builder, G_VARIANT_TYPE ("a(sss)"));
+      g_variant_builder_add (&collection_refs_builder, "(sss)", collection_id, ref, NULL);
+      g_variant_builder_add (&builder, "{s@v}", "collection-refs",
+                             g_variant_builder_end (&collection_refs_builder));
+    }
+  else
+    {
+      g_variant_builder_add (&builder, "{s@v}", "refs",
+                             g_variant_new_variant (g_variant_new_strv (&ref, 1)));
+    }
 
   return g_variant_ref_sink (g_variant_builder_end (&builder));
 };
@@ -729,6 +751,7 @@ fetch_latest_commit (OstreeRepo *repo,
   g_autoptr(EosExtensions) extensions = NULL;
   g_autofree gchar *remote_name = NULL;
   g_autofree gchar *ref = NULL;
+  g_autofree gchar *collection_id = NULL;
 
   g_return_val_if_fail (OSTREE_IS_REPO (repo), FALSE);
   g_return_val_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable), FALSE);
@@ -740,7 +763,19 @@ fetch_latest_commit (OstreeRepo *repo,
   if (!ostree_parse_refspec (refspec, &remote_name, &ref, error))
     return FALSE;
 
-  options = get_repo_pull_options (url_override, ref);
+  if (!ostree_repo_remote_get_option (repo,
+                                      remote_name,
+                                      "collection-id",
+                                      NULL,
+                                      &collection_id,
+                                      error))
+    return FALSE;
+
+  if (collection_id != NULL && collection_id[0] != '\0' &&
+      !ostree_validate_collection_id (collection_id, error))
+    return FALSE;
+
+  options = get_repo_pull_options (url_override, ref, collection_id);
   if (!ostree_repo_pull_with_options (repo,
                                       remote_name,
                                       options,
@@ -749,6 +784,7 @@ fetch_latest_commit (OstreeRepo *repo,
                                       error))
     return FALSE;
 
+  //TODO how to skip verifying the summary here?
   if (!fetch_commit_checksum (repo,
                               cancellable,
                               remote_name,
