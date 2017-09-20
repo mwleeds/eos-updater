@@ -111,7 +111,6 @@ eos_metadata_fetch_data_new (GTask *task,
                              GMainContext *context);
 
 typedef gboolean (*MetadataFetcher) (EosMetadataFetchData *fetch_data,
-                                     GVariant *source_variant,
                                      EosUpdateInfo **info,
                                      GError **error);
 
@@ -158,7 +157,6 @@ gboolean string_to_download_source (const gchar *str,
 
 EosUpdateInfo *run_fetchers (EosMetadataFetchData *fetch_data,
                              GPtrArray *fetchers,
-                             GPtrArray *source_variants,
                              GArray *sources);
 
 void metadata_fetch_finished (GObject *object,

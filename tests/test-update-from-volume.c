@@ -47,7 +47,6 @@ test_update_from_volume (EosUpdaterFixture *fixture,
   g_autoptr(GPtrArray) cmds = NULL;
   gboolean has_commit;
   DownloadSource volume_source = DOWNLOAD_VOLUME;
-  g_autoptr(GVariant) volume_source_variant = NULL;
 
   server_root = g_file_get_child (fixture->tmpdir, "main");
   server = eos_test_server_new_quick (server_root,
@@ -96,10 +95,8 @@ test_update_from_volume (EosUpdaterFixture *fixture,
                                   &error);
   g_assert_no_error (error);
 
-  volume_source_variant = g_variant_new_take_string (g_file_get_path (volume_path));
   eos_test_client_run_updater (client1,
                                &volume_source,
-                               &volume_source_variant,
                                1,
                                &updater_cmd,
                                &error);
