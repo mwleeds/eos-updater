@@ -729,6 +729,7 @@ fetch_latest_commit (OstreeRepo *repo,
   g_autoptr(EosExtensions) extensions = NULL;
   g_autofree gchar *remote_name = NULL;
   g_autofree gchar *ref = NULL;
+  g_autofree gchar *collection_id = NULL;
 
   g_return_val_if_fail (OSTREE_IS_REPO (repo), FALSE);
   g_return_val_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable), FALSE);
@@ -739,6 +740,34 @@ fetch_latest_commit (OstreeRepo *repo,
 
   if (!ostree_parse_refspec (refspec, &remote_name, &ref, error))
     return FALSE;
+
+  if (!ostree_repo_get_remote_option (repo,
+                                      remote_name,
+                                      "collection-id",
+                                      NULL,
+                                      &collection_id,
+                                      error))
+    return FALSE;
+
+  if (collection_id == NULL || *collection_id == '\0')
+    {
+      //TODO put legacy code path here
+    }
+  else if (!ostree_validate_collection_id (collection_id, error))
+    return FALSE;
+  else
+    {
+      if (!ostree_repo_find_remotes_async (repo,
+                                           (const OstreeCollectionRef * const *) collection_refs,
+                                           NULL,
+                                           NULL, //TODO add finders
+                                           NULL,
+                                           cancellable,
+                                           error))
+        return FALSE;
+
+      ostree_repo_pull_from_remotes_async ()
+    }
 
   options = get_repo_pull_options (url_override, ref);
   if (!ostree_repo_pull_with_options (repo,
