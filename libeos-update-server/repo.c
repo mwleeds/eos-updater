@@ -834,6 +834,68 @@ handle_refs_heads (EusRepo     *self,
 }
 
 static void
+handle_refs_mirrors (EusRepo     *self,
+                     SoupMessage *msg,
+                     const gchar *requested_path)
+{
+  gsize prefix_len = strlen ("/refs/mirrors/");
+  size_t len = strlen (requested_path);
+  g_autofree gchar *raw_path = NULL;
+  gboolean served = FALSE;
+  const gchar *collection_ref;
+  g_autofree gchar *collection_id = NULL;
+  g_autofree gchar *repo_collection_id = NULL;
+  g_autoptr(GError) error = NULL;
+
+  if (len <= prefix_len || strstr(requested_path + prefix_len, "/") == NULL)
+    {
+      g_debug ("Invalid request for /refs/mirrors/");
+      soup_message_set_status (msg, SOUP_STATUS_BAD_REQUEST);
+      return;
+    }
+
+  /* Pass through the request if it exists */
+  raw_path = g_build_filename (self->cached_repo_root, requested_path, NULL);
+  if (!serve_file_if_exists (msg, self->cached_repo_root, raw_path, self->cancellable, &served))
+    return;
+
+  if (served)
+    return;
+
+  /* If not, this is probably a request for a ref we have in refs/remotes.
+   * Transparently redirect to /refs/remotes/$remote_name if $remote_name
+   * has the same collection ID as the requested ref. */
+  collection_id = g_strdup (requested_path + prefix_len);
+  *strstr (collection_id, "/") = '\0';
+  if (!ostree_validate_collection_id (collection_id, error))
+    {
+      g_debug ("Invalid /refs/mirrors/ request: %s", error->message);
+      soup_message_set_status (msg, SOUP_STATUS_BAD_REQUEST);
+      return;
+    }
+
+  repo_collection_id = ostree_repo_get_collection_id (self->repo);
+  if (g_strcmp0 (repo_collection_id, collection_id) != 0)
+    {
+      g_debug ("Repo collection ID '%s' and request collection ID '%s' don't match",
+               repo_collection_id, collection_id);
+      soup_message_set_status (msg, SOUP_STATUS_BAD_REQUEST);
+      return;
+    }
+
+  collection_ref = requested_path + prefix_len + strlen(collection_id) + 1; /* e.g eos2/i386 */
+  g_clear_pointer (&raw_path, g_free);
+  raw_path = g_build_filename (self->cached_repo_root,
+                               "refs",
+                               "remotes",
+                               self->remote_name,
+                               collection_ref,
+                               NULL);
+
+  serve_file (msg, self->cached_repo_root, raw_path, self->cancellable);
+}
+
+static void
 handle_path (EusRepo     *self,
              SoupMessage *msg,
              const gchar *path)
@@ -869,6 +931,8 @@ handle_path (EusRepo     *self,
     handle_summary (self, msg, path);
   else if (g_str_has_prefix (path, "/refs/heads/"))
     handle_refs_heads (self, msg, path);
+  else if (g_str_has_prefix (path, "/refs/mirrors/"))
+    handle_refs_mirrors (self, msg, path);
   else
     soup_message_set_status (msg, SOUP_STATUS_NOT_FOUND);
 
