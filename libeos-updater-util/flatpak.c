@@ -121,6 +121,18 @@ euu_flatpak_remote_ref_action_unref (EuuFlatpakRemoteRefAction *action)
   g_slice_free (EuuFlatpakRemoteRefAction, action);
 }
 
+char *
+euu_flatpak_remote_ref_action_get_collection_id (EuuFlatpakRemoteRefAction *action)
+{
+    return g_strdup (action->ref->collection_id);
+}
+
+char *
+euu_flatpak_remote_ref_action_get_ref (EuuFlatpakRemoteRefAction *action)
+{
+    return flatpak_ref_format_ref (action->ref->ref);
+}
+
 static gboolean
 flatpak_remote_ref_action_type_parse (const gchar                    *action,
                                       EuuFlatpakRemoteRefActionType  *out_action_type,

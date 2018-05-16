@@ -104,6 +104,9 @@ void euu_flatpak_remote_ref_action_unref (EuuFlatpakRemoteRefAction *action);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (EuuFlatpakRemoteRefAction, euu_flatpak_remote_ref_action_unref)
 
+char *euu_flatpak_remote_ref_action_get_collection_id (EuuFlatpakRemoteRefAction *action);
+char *euu_flatpak_remote_ref_action_get_ref (EuuFlatpakRemoteRefAction *action);
+
 EuuFlatpakRemoteRefActionsFile *euu_flatpak_remote_ref_actions_file_new (GPtrArray *remote_ref_actions,
                                                                          gint       priority);
 void euu_flatpak_remote_ref_actions_file_free (EuuFlatpakRemoteRefActionsFile *file);
