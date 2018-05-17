@@ -528,6 +528,7 @@ libeos_updater_flatpak_installer_EosUpdaterFlatpakInstaller_@EUFI_API_VERSION@_g
 	-I$(top_srcdir) \
 	$(NULL)
 
+INTROSPECTION_COMPILER_ARGS += --includedir=$(top_builddir)/libeos-updater-util
 INTROSPECTION_GIRS += libeos-updater-flatpak-installer/EosUpdaterFlatpakInstaller-@EUFI_API_VERSION@.gir
 
 girdir = $(datadir)/gir-1.0
