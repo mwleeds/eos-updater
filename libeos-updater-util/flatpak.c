@@ -41,6 +41,9 @@ euu_flatpak_location_ref_new (FlatpakRef  *ref,
                               const gchar *remote,
                               const gchar *collection_id)
 {
+  g_return_val_if_fail (FLATPAK_IS_REF (ref), NULL);
+  g_return_val_if_fail (remote != NULL, NULL);
+
   EuuFlatpakLocationRef *location_ref = g_slice_new0 (EuuFlatpakLocationRef);
 
   location_ref->ref_count = 1;
