@@ -2932,7 +2932,7 @@ eos_test_client_prepare_volume (EosTestClient *client,
                                                                                "eos-updater-prepare-volume",
                                                                                "eos-updater-prepare-volume",
                                                                                NULL);
-  g_autofree gchar *libeos_updater_util_path = g_test_build_filename (G_TEST_DIST,
+  g_autofree gchar *libeos_updater_util_path = g_test_build_filename (G_TEST_BUILT,
                                                                       "..",
                                                                       "libeos-updater-util",
                                                                       NULL);
