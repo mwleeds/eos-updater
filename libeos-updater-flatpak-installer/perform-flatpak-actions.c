@@ -349,8 +349,8 @@ update_counter_complain_on_error (const gchar *failing_name,
 /**
  * eufi_apply_flatpak_ref_actions:
  * @installation: a #FlatpakInstallation
- * @state_counter_path: path to the counter that records what actions have
- *   been applied
+ * @state_counter_path: (type filename): path to the counter that records what
+ *    actions have been applied
  * @actions: (element-type EuuFlatpakRemoteRefAction): actions to apply
  * @mode: the #EosUpdaterInstallerMode
  * @pull: any #EosUpdaterInstallerFlags
