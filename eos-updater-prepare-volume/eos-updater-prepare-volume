@@ -92,7 +92,8 @@ class VolumePreparer:
         """Get the collection–ref tuple for the booted OS, or None."""
         deployment = self.sysroot.get_booted_deployment()
         if not deployment:
-            if 'EOS_UPDATER_TEST_UPDATER_DEPLOYMENT_FALLBACK' not in os.environ:
+            if 'EOS_UPDATER_TEST_UPDATER_DEPLOYMENT_FALLBACK' not in \
+               os.environ:
                 return None
 
             deployments = self.sysroot.get_deployments()
@@ -223,7 +224,8 @@ class VolumePreparer:
                                     (collection_id, ref)
                                     for (collection_id, ref) in invalid_refs]))
             return self.__fail(self.EXIT_INVALID_ARGUMENTS,
-                               'Invalid flatpak collection–refs: %s' % refs_list)
+                               'Invalid flatpak collection–refs: %s' %
+                               refs_list)
 
         # Add the flatpaks that will be installed by
         # eos-updater-flatpak-installer.
@@ -281,7 +283,8 @@ def main():
                         help='do not print anything; check exit status '
                              'for success')
     parser.add_argument('flatpak_refs', metavar='COLLECTION-ID REF', nargs='*',
-                        help='collection IDs and refs of flatpaks to put on the USB drive')
+                        help='collection IDs and refs of flatpaks to put on '
+                             'the USB drive')
 
     args = parser.parse_args()
 
