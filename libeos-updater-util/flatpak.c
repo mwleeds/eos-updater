@@ -1117,8 +1117,10 @@ euu_flatpak_ref_actions_from_data (const gchar   *data,
 
 /**
  * euu_flatpak_remote_ref_actions_file_new:
- * @remote_ref_actions: (element-type EuuFlatpakRemoteRefAction): A #GPtrArray
- * @priority: the priority of the file
+ * @remote_ref_actions: (element-type EuuFlatpakRemoteRefAction): a potentially
+ *    empty array of actions loaded from a single file
+ * @priority: the priority of the file; lower numeric priority values are more
+ *    important
  *
  * Returns: (transfer full): A new #EuuFlatpakRemoteRefActionsFile
  */
