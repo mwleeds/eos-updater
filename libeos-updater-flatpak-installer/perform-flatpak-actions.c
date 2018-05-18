@@ -365,7 +365,7 @@ update_counter_complain_on_error (const gchar *failing_name,
 gboolean
 eufi_apply_flatpak_ref_actions (FlatpakInstallation       *installation,
                                 const gchar               *state_counter_path,
-                                GPtrArray                 *actions  /* (element-type EuuFlatpakRemoteRefAction) */,
+                                GPtrArray                 *actions,
                                 EosUpdaterInstallerMode    mode,
                                 EosUpdaterInstallerFlags   pull,
                                 GError                   **error)
@@ -471,7 +471,7 @@ check_if_flatpak_is_installed (FlatpakInstallation        *installation,
  */
 gboolean
 eufi_check_ref_actions_applied (FlatpakInstallation  *installation,
-                                GPtrArray            *actions  /* (element-type EuuFlatpakRemoteRefAction) */,
+                                GPtrArray            *actions,
                                 GError              **error)
 {
   g_autoptr(GError) local_error = NULL;
