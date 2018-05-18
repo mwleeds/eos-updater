@@ -459,7 +459,6 @@ check_if_flatpak_is_installed (FlatpakInstallation        *installation,
 /**
  * eufi_check_ref_actions_applied:
  * @installation: a #FlatpakInstallation
- * @pending_flatpak_deployments_state_path: unused
  * @actions: (element-type EuuFlatpakRemoteRefAction): actions to apply
  * @error: return location for a #GError, or %NULL
  *
