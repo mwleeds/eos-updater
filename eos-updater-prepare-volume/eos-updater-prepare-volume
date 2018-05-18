@@ -29,7 +29,7 @@ gi.require_version('GLib', '2.0')
 gi.require_version('OSTree', '1.0')
 gi.require_version('EosUpdaterUtil', '0')
 from gi.repository import Flatpak, GLib, OSTree  # noqa
-from gi.repository import EosUpdaterUtil
+from gi.repository import EosUpdaterUtil  # noqa
 
 
 class VolumePreparer:
@@ -189,7 +189,8 @@ class VolumePreparer:
 
         for filename, actions in applied_actions.items():
             for action in actions:
-                if action.type != EosUpdaterUtil.FlatpakRemoteRefActionType.UNINSTALL:
+                if action.type != \
+                   EosUpdaterUtil.FlatpakRemoteRefActionType.UNINSTALL:
                     autoinstalls.add((action.ref.collection_id,
                                       action.ref.ref.format_ref()))
 
