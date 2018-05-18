@@ -462,10 +462,10 @@ check_if_flatpak_is_installed (FlatpakInstallation        *installation,
  * @actions: (element-type EuuFlatpakRemoteRefAction): actions to apply
  * @error: return location for a #GError, or %NULL
  *
- * Check each action in @actions to see if its operation has occurred. In truth
- * only installs and updates are checked; there's not currently a way to check
- * update operations. If some of the actions haven't been successfully applied,
- * @error will be set with a helpful message.
+ * Check each action in @actions to see if its operation has been applied. In
+ * truth only installs and updates are checked; there's not currently a way to
+ * check update operations. If some of the actions haven't been successfully
+ * applied, @error will be set with a helpful message.
  *
  * Returns: %TRUE on success, %FALSE otherwise
  */
