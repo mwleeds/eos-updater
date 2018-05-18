@@ -27,10 +27,9 @@ import gi
 gi.require_version('Flatpak', '1.0')
 gi.require_version('GLib', '2.0')
 gi.require_version('OSTree', '1.0')
-gi.require_version('EosUpdaterFlatpakInstaller', '0')
 gi.require_version('EosUpdaterUtil', '0')
 from gi.repository import Flatpak, GLib, OSTree  # noqa
-from gi.repository import EosUpdaterFlatpakInstaller, EosUpdaterUtil
+from gi.repository import EosUpdaterUtil
 
 
 class VolumePreparer:
@@ -176,12 +175,25 @@ class VolumePreparer:
 
         return runtimes
 
-    def _add_autoinstall_flatpaks(self, flatpak_collection_refs):
-        applied_actions = EosUpdaterFlatpakInstaller.determine_flatpak_ref_actions_to_check(None)
-        for filename in applied_actions:
-            for action in applied_actions[filename]:
+    def _get_autoinstall_flatpaks(self, flatpak_collection_refs):
+        """
+        Read all the autoinstall lists (see eos-updater-flatpak-installer(8))
+        and return a set of the flatpaks listed as needing an install or
+        upgrade. Load the set irrespective of the state of the autoinstall
+        counter on this system, since whichever system the USB drive is used on
+        might have a different counter value.
+        """
+        autoinstalls = set()
+
+        applied_actions = EosUpdaterUtil.flatpak_ref_actions_from_paths(None)
+
+        for filename, actions in applied_actions.items():
+            for action in actions:
                 if action.type != EosUpdaterUtil.FlatpakRemoteRefActionType.UNINSTALL:
-                    flatpak_collection_refs.append((action.get_collection_id(), action.get_ref()))
+                    autoinstalls.add((action.ref.collection_id,
+                                      action.ref.ref.format_ref()))
+
+        return autoinstalls
 
     def prepare_volume(self):
         # We need to be root in order to read all the files in the OSTree repo
@@ -212,13 +224,21 @@ class VolumePreparer:
             return self.__fail(self.EXIT_INVALID_ARGUMENTS,
                                'Invalid flatpak collection–refs: %s' % refs_list)
 
-        # Add the flatpaks that will be installed by eos-updater-flatpak-installer
-        self._add_autoinstall_flatpaks(flatpak_collection_refs)
+        # Add the flatpaks that will be installed by
+        # eos-updater-flatpak-installer.
+        try:
+            autoinstall_collection_refs = \
+                self._get_autoinstall_flatpaks(flatpak_collection_refs)
+        except GLib.Error as e:
+            return self.__fail(self.EXIT_FAILED,
+                               'Failed to list autoinstall flatpaks to add to '
+                               'the USB drive')
 
         # FIXME: Do we also want to pull in related refs, like locales?
         # Currently, they can be listed explicitly on the command line.
         runtime_collection_refs = \
-            self._get_runtimes_for_flatpaks(flatpak_collection_refs)
+            self._get_runtimes_for_flatpaks(flatpak_collection_refs |
+                                            autoinstall_collection_refs)
 
         os_collection_ref = self._get_os_collection_ref()
         if not os_collection_ref:
@@ -229,6 +249,7 @@ class VolumePreparer:
         collection_refs = \
             [os_collection_ref] + \
             list(flatpak_collection_refs) + \
+            list(autoinstall_collection_refs) + \
             list(runtime_collection_refs)
 
         # Eliminate duplicates.
