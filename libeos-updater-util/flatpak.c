@@ -121,16 +121,36 @@ euu_flatpak_remote_ref_action_unref (EuuFlatpakRemoteRefAction *action)
   g_slice_free (EuuFlatpakRemoteRefAction, action);
 }
 
-char *
+/**
+ * euu_flatpak_remote_ref_action_get_collection_id:
+ * @action: an #EuuFlatpakRemoteRefAction
+ *
+ * Helper function to get the collection ID from the ref for @action. This will
+ * be %NULL if the action has no collection ID set if, for example, it is an
+ * uninstall action.
+ *
+ * Returns: (nullable): collection ID from the ref for @action, or %NULL if
+ *    no collection ID is set for this action
+ */
+const gchar *
 euu_flatpak_remote_ref_action_get_collection_id (EuuFlatpakRemoteRefAction *action)
 {
-    return g_strdup (action->ref->collection_id);
+  return action->ref->collection_id;
 }
 
-char *
-euu_flatpak_remote_ref_action_get_ref (EuuFlatpakRemoteRefAction *action)
+/**
+ * euu_flatpak_remote_ref_action_format_ref:
+ * @action: an #EuuFlatpakRemoteRefAction
+ *
+ * Format the ref for @action using flatpak_ref_format_ref(). This produces a
+ * string form ref which is suitable for use with flatpak_ref_parse().
+ *
+ * Returns: (transfer full): formatted ref for @action
+ */
+gchar *
+euu_flatpak_remote_ref_action_format_ref (EuuFlatpakRemoteRefAction *action)
 {
-    return flatpak_ref_format_ref (action->ref->ref);
+  return flatpak_ref_format_ref (action->ref->ref);
 }
 
 static gboolean
