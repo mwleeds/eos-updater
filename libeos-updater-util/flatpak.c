@@ -2698,7 +2698,7 @@ directories_to_search_from_environment (void)
  * Load the #EuuFlatpakRemoteRefActions from all the autoinstall JSON files in
  * the given @directories_to_search.
  *
- * @directories to search may be %NULL, in which case the default list of
+ * @directories_to_search may be %NULL, in which case the default list of
  * directories is used. Files from lower-indexed directories in
  * @directories_to_search take priority over files with the same name in later
  * directories.
