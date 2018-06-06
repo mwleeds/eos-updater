@@ -176,7 +176,7 @@ class VolumePreparer:
 
         return runtimes
 
-    def _get_autoinstall_flatpaks(self, flatpak_collection_refs):
+    def _get_autoinstall_flatpaks(self):
         """
         Read all the autoinstall lists (see eos-updater-flatpak-installer(8))
         and return a set of the flatpaks listed as needing an install or
@@ -230,8 +230,7 @@ class VolumePreparer:
         # Add the flatpaks that will be installed by
         # eos-updater-flatpak-installer.
         try:
-            autoinstall_collection_refs = \
-                self._get_autoinstall_flatpaks(flatpak_collection_refs)
+            autoinstall_collection_refs = self._get_autoinstall_flatpaks()
         except GLib.Error as e:
             return self.__fail(self.EXIT_FAILED,
                                'Failed to list autoinstall flatpaks to add to '
